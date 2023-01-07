@@ -33,19 +33,23 @@ def strip_CRLF_from_Text(text):
     return plaintext
 
 
-p_temp = pathlib.Path('thesis/miyaken_txt')
-txtList = list(p_temp.glob('*.txt'))
-for txtFile in txtList:
-    with open(txtFile, mode='r') as f:
-        raw = f.read()
-        #中身をそのまま表示すsる
-        # print(raw)
-        # 改行を削除して表示する
-        text = strip_CRLF_from_Text(raw)
-        text = unicodedata.normalize('NFC', text)
-        # print(text)
-        file_name = os.path.splitext(os.path.basename(txtFile))[0]
-        with open('thesis/miyaken_output/' + file_name + '.txt', 'w') as txtf:
-            txtf.write(my_mecab(text))
-            txtf.close()
+def morphological():
+    p_temp = pathlib.Path('thesis/miyaken_txt')
+    txtList = list(p_temp.glob('*.txt'))
+    for txtFile in txtList:
+        with open(txtFile, mode='r') as f:
+            raw = f.read()
+            #中身をそのまま表示すsる
+            # print(raw)
+            # 改行を削除して表示する
+            text = strip_CRLF_from_Text(raw)
+            text = unicodedata.normalize('NFC', text)
+            # print(text)
+            file_name = os.path.splitext(os.path.basename(txtFile))[0]
+            with open('thesis/miyaken_output/' + file_name + '.txt', 'w') as txtf:
+                txtf.write(my_mecab(text))
+                txtf.close()
 
+
+if __name__ == "__main__":
+    morphological()

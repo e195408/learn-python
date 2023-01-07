@@ -143,7 +143,8 @@ def main():
         # 特徴語リスト＝file_tfidf_dict (辞書型)
 
     for filename in filename_list:
-        # print('filename:{0}'.format(filename))
+        print('filename:{0}'.format(filename))
+        # print(file_tfidf_dict[filename])
         tfidf_sorted = sorted(file_tfidf_dict[filename].items(),
                               key=lambda x: x[1], reverse=True)
         print('word number:{0}'.format(len(tfidf_sorted)))
@@ -153,20 +154,17 @@ def main():
                 i+1, tfidf_sorted[i][0], tfidf_sorted[i][1]))
         print()
 
-        # print(type(file_tfidf_dict), file_tfidf_dict)
-        # print(type(tfidf_sorted))
-        # print(tfidf_sorted)
+        # 特徴的な語上位リスト = tfidf_sorted（辞書型）
 
         tfidf_sorted_list = np.array(tfidf_sorted)
-        tfidf_sorted_word = tfidf_sorted_list[:,0]
+        tfidf_sorted_wordlist = list(map(lambda x:x[0], tfidf_sorted_list))
         # print(tfidf_sorted_word)
+        top_word = tfidf_sorted_wordlist[:700]
+        print(len(top_word))
 
-        vector = text_vector(tfidf_sorted_word)
+        vector = text_vector(top_word)
 
         print(vector)
-
-
-
 
 
 
