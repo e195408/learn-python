@@ -131,7 +131,7 @@ def get_distance_matrix(tfidf):
 
 
 p_temp = pathlib.Path('thesis/miyaken_txt')
-txtList = list(p_temp.glob('a101404_uematsu.txt'))
+txtList = list(p_temp.glob('a101404_上まつ.txt'))
 for txtFile in txtList:
     with open(txtFile, mode='r') as f:
         raw = f.read()

@@ -1,4 +1,5 @@
 import collections
+import csv
 import pathlib
 import re
 import codecs
@@ -25,6 +26,7 @@ def get_filename_list():
     meca_path = pathlib.Path('thesis/miyaken_output')
     meca_list = list(meca_path.glob('*.txt'))
     return meca_list
+
 
 def sentences_generator(meca):
     sentences = []
@@ -120,6 +122,23 @@ def text_vector(tfidf_sorted_word):
     return vector
 
 
+def get_namelab_from_path(filename_path):
+    filename_path = str(filename_path)
+    target1 = 'thesis/miyaken_output/'
+    idx1 = filename_path.find(target1)
+    target2 = '.txt'
+    idx2 = filename_path.find(target2)
+    filename_plane = filename_path[idx1+len(target1):idx2]
+    # print(filename)
+
+    sep = '_'
+    name = filename_plane.split(sep)
+
+    lab = name[0]
+    filename_plane = name[1]
+
+    return lab, filename_plane
+
 
 def main():
     filename_list = get_filename_list()
@@ -129,6 +148,7 @@ def main():
     file_tf_dict = {}
     file_idf_dict = {}
     file_tfidf_dict = {}
+    file_vector_dict = {}
     for filename in filename_list:
         sentences = sentences_generator(filename)
         file_word_counter[filename] = countup_words(sentences)
@@ -140,7 +160,7 @@ def main():
                                file_idf_dict[filename][word]
         file_tfidf_dict[filename] = tfidf_dict
         # print(file_tfidf_dict)
-        # 特徴語リスト＝file_tfidf_dict (辞書型)
+        # 特徴語リスト＝file_tfidf_dict (辞書型）
 
     for filename in filename_list:
         print('filename:{0}'.format(filename))
@@ -152,19 +172,45 @@ def main():
         for i in range(0, 10):
             print('{0}\t{1}\t\t{2}'.format(
                 i+1, tfidf_sorted[i][0], tfidf_sorted[i][1]))
-        print()
 
-        # 特徴的な語上位リスト = tfidf_sorted（辞書型）
+        # 特徴的な語上位リスト = tfidf_sorted（list型）
+        # print(type(tfidf_sorted))
 
         tfidf_sorted_list = np.array(tfidf_sorted)
         tfidf_sorted_wordlist = list(map(lambda x:x[0], tfidf_sorted_list))
         # print(tfidf_sorted_word)
         top_word = tfidf_sorted_wordlist[:700]
-        print(len(top_word))
+        # print(len(top_word))
+        # 特徴語リスト上位700 = top_word（リスト）
 
-        vector = text_vector(top_word)
+        lab, filename_plane = get_namelab_from_path(filename)
+        with open('thesis/miyaken_tfidf/' + filename_plane + '.txt', 'w', encoding='utf-8') as output_file:
+            for x in tfidf_sorted_list:
+                output_file.write(str(x) + "\n")
+            output_file.close()
 
-        print(vector)
+        file_vector_dict[filename] = text_vector(top_word)
+
+    HEADER = ['name', 'lab', 'vector']
+    with open('thesis/thesis_vector.csv', 'w', encoding='utf-8') as f:
+        writer = csv.writer(f)
+        writer.writerow(HEADER)
+
+        print(file_vector_dict)
+
+        for filename in filename_list:
+            lab, filename_plane = get_namelab_from_path(filename)
+            print(filename)
+            print('lab:{0}'.format(lab))
+            print('name:{0}'.format(filename_plane))
+
+            vector = file_vector_dict[filename]
+
+            print('vector:{0}'.format(vector))
+            print()
+
+            row =[filename_plane, lab, vector]
+            writer.writerow(row)
 
 
 
